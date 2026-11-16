@@ -35,7 +35,7 @@ const TaskCard = ({
             onStatusChange(task.id, e.target.value as TaskStatus)
           }
         >
-          <option value="todo">To Do</option>
+          <option value="to-do">To Do</option>
           <option value="in-progress">In Progress</option>
           <option value="done">Done</option>
         </select>
