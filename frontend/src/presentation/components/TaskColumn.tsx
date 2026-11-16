@@ -7,6 +7,11 @@ interface TaskColumnProps {
   tasks: Task[];
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
+  onDrop: (status: TaskStatus) => void;
+  onDragOver: (status: TaskStatus) => void;
+  isDragOver: boolean;
+  onDragStart: (id: string) => void;
+  onDragEnd: () => void;
   onStatusChange: (id: string, status: TaskStatus) => void;
 }
 
@@ -16,12 +21,27 @@ const TaskColumn = ({
   tasks,
   onEdit,
   onDelete,
+  onDrop,
+  onDragOver,
+  isDragOver,
+  onDragStart,
+  onDragEnd,
   onStatusChange,
 }: TaskColumnProps) => {
   const filteredTasks = tasks.filter((task) => task.status === status);
 
   return (
-    <section className="task-column">
+    <section
+      className={`task-column ${isDragOver ? "drag-over" : ""}`}
+      onDragOver={(e) => {
+        e.preventDefault();
+        onDragOver(status);
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        onDrop(status);
+      }}
+    >
       <div className="column-header">
         <h2>{title}</h2>
         <span>{filteredTasks.length}</span>
@@ -37,6 +57,8 @@ const TaskColumn = ({
             onEdit={onEdit}
             onDelete={onDelete}
             onStatusChange={onStatusChange}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
           />
         ))
       )}

@@ -163,6 +163,21 @@ button:hover {
   margin-bottom: 18px;
 }
 
+.task-card[draggable="true"] {
+  cursor: grab;
+}
+
+.task-card[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.task-column.drag-over {
+  background: #e0e7f0;
+  outline: 2px dashed #8b9bb3;
+  outline-offset: -2px;
+  transition: background 0.15s ease;
+}
+
 @media (max-width: 768px) {
   .board-columns {
     grid-template-columns: 1fr;
