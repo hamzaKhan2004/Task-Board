@@ -12,7 +12,8 @@ import TaskColumn from "../components/TaskColumn";
 
 const TaskBoard = () => {
   const { tasks, loading, error, addTask, editTask, removeTask } = useTasks();
-
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [dragOverStatus, setDragOverStatus] = useState<TaskStatus | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
@@ -48,6 +49,36 @@ const TaskBoard = () => {
     void editTask(id, { status });
   };
 
+  const handleDragStart = (id: string) => {
+    setDraggedTaskId(id);
+  };
+
+  const handleDragOver = (status: TaskStatus) => {
+    setDragOverStatus(status);
+  };
+
+  const handleDrop = async (status: TaskStatus) => {
+    if (!draggedTaskId) return;
+
+    const draggedTask = tasks.find((task) => task.id === draggedTaskId);
+
+    if (!draggedTask || draggedTask.status === status) {
+      setDraggedTaskId(null);
+      setDragOverStatus(null);
+      return;
+    }
+
+    await editTask(draggedTaskId, { status });
+
+    setDraggedTaskId(null);
+    setDragOverStatus(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedTaskId(null);
+    setDragOverStatus(null);
+  };
+
   if (loading) {
     return <p className="page-message">Loading tasks...</p>;
   }
@@ -78,6 +109,11 @@ const TaskBoard = () => {
           title="To Do"
           status="to-do"
           tasks={tasks}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          isDragOver={dragOverStatus === "to-do"}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onStatusChange={handleStatusChange}
@@ -87,6 +123,11 @@ const TaskBoard = () => {
           title="In Progress"
           status="in-progress"
           tasks={tasks}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          isDragOver={dragOverStatus === "in-progress"}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onStatusChange={handleStatusChange}
@@ -96,6 +137,11 @@ const TaskBoard = () => {
           title="Done"
           status="done"
           tasks={tasks}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          isDragOver={dragOverStatus === "done"}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onStatusChange={handleStatusChange}
