@@ -1,0 +1,179 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f6f8;
+  color: #20242b;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid #d5d9df;
+  background: white;
+  padding: 9px 13px;
+  border-radius: 6px;
+}
+
+button:hover {
+  background: #f0f2f5;
+}
+
+.board-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 35px 24px;
+}
+
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.board-header h1 {
+  font-size: 26px;
+  margin-bottom: 7px;
+}
+
+.board-header p {
+  color: #707782;
+  font-size: 14px;
+}
+
+.board-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.task-column {
+  background: #eceff3;
+  border-radius: 8px;
+  padding: 14px;
+  min-height: 300px;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.column-header h2 {
+  font-size: 15px;
+}
+
+.column-header span {
+  color: #707782;
+  font-size: 13px;
+}
+
+.task-card {
+  background: white;
+  padding: 15px;
+  border: 1px solid #e0e3e8;
+  border-radius: 7px;
+  margin-bottom: 12px;
+}
+
+.task-card h3 {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.task-card p {
+  font-size: 13px;
+  color: #707782;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.task-actions select {
+  max-width: 130px;
+  min-width: 0;
+}
+
+.task-actions button,
+.task-actions select {
+  padding: 7px;
+  font-size: 12px;
+}
+
+.task-form {
+  background: white;
+  border: 1px solid #e0e3e8;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 24px;
+  max-width: 500px;
+}
+
+.task-form h3 {
+  margin-bottom: 14px;
+}
+
+.task-form input,
+.task-form textarea,
+.task-form select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #d5d9df;
+  border-radius: 5px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.empty-message,
+.page-message {
+  color: #858b95;
+  font-size: 13px;
+  padding: 12px 0;
+}
+
+.error-message {
+  background: #fff0f0;
+  color: #b42318;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 768px) {
+  .board-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .board-container {
+    padding: 22px 14px;
+  }
+
+  .board-header {
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
