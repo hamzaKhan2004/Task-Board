@@ -1,59 +1,129 @@
 import { v4 as uuidv4 } from "uuid";
+import db from "../config/database.js";
 import type { Task, CreateTaskInput } from "../types/task.types.js";
 
-const tasks: Task[] = [];
+interface TaskRow {
+  id: string;
+  title: string;
+  description: string;
+  status: Task["status"];
+  created_at: string;
+  updated_at: string;
+}
 
-// Creating task
+const mapTask = (row: TaskRow): Task => ({
+  id: row.id,
+  title: row.title,
+  description: row.description,
+  status: row.status,
+  createdAt: new Date(row.created_at),
+  updatedAt: new Date(row.updated_at),
+});
+
+// Create task
 export const createTask = (data: CreateTaskInput): Task => {
-  const newTask: Task = {
+  const now = new Date();
+
+  const task: Task = {
     id: uuidv4(),
     title: data.title,
     description: data.description,
     status: data.status,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: now,
+    updatedAt: now,
   };
 
-  tasks.push(newTask);
+  const statement = db.prepare(`
+    INSERT INTO tasks (
+      id,
+      title,
+      description,
+      status,
+      created_at,
+      updated_at
+    )
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
 
-  return newTask;
-};
-
-// Getting all tasks
-export const getAllTasks = (): Task[] => {
-  return tasks;
-};
-
-// Getting single task
-export const getTaskById = (id: string): Task | undefined => {
-  return tasks.find((task) => task.id === id);
-};
-
-// Updating task
-export const updateTask = (
-  id: string,
-  updates: Partial<CreateTaskInput>,
-): Task | undefined => {
-  const task = tasks.find((task) => task.id === id);
-
-  if (!task) {
-    return undefined;
-  }
-
-  Object.assign(task, updates, { updatedAt: new Date() });
+  statement.run(
+    task.id,
+    task.title,
+    task.description,
+    task.status,
+    task.createdAt.toISOString(),
+    task.updatedAt.toISOString(),
+  );
 
   return task;
 };
 
-// Deleting task
-export const deleteTask = (id: string): boolean => {
-  const index = tasks.findIndex((task) => task.id === id);
+// Get all tasks
+export const getAllTasks = (): Task[] => {
+  const statement = db.prepare(`
+    SELECT * FROM tasks ORDER BY created_at ASC
+  `);
 
-  if (index === -1) {
-    return false;
+  const rows = statement.all() as TaskRow[];
+
+  return rows.map(mapTask);
+};
+
+// Get task by ID
+export const getTaskById = (id: string): Task | undefined => {
+  const statement = db.prepare(`
+    SELECT * FROM tasks WHERE id = ?
+  `);
+
+  const row = statement.get(id) as TaskRow | undefined;
+
+  return row ? mapTask(row) : undefined;
+};
+
+// Update task
+export const updateTask = (
+  id: string,
+  updates: Partial<CreateTaskInput>,
+): Task | undefined => {
+  const existingTask = getTaskById(id);
+
+  if (!existingTask) {
+    return undefined;
   }
 
-  tasks.splice(index, 1);
+  const updatedTask: Task = {
+    ...existingTask,
+    ...updates,
+    updatedAt: new Date(),
+  };
 
-  return true;
+  const statement = db.prepare(`
+    UPDATE tasks
+    SET
+      title = ?,
+      description = ?,
+      status = ?,
+      updated_at = ?
+    WHERE id = ?
+  `);
+
+  statement.run(
+    updatedTask.title,
+    updatedTask.description,
+    updatedTask.status,
+    updatedTask.updatedAt.toISOString(),
+    id,
+  );
+
+  return getTaskById(id);
+};
+
+// Delete task
+export const deleteTask = (id: string): boolean => {
+  const statement = db.prepare(`
+    DELETE FROM tasks WHERE id = ?
+  `);
+
+  const result = statement.run(id);
+
+  return result.changes > 0;
 };
